@@ -2,6 +2,7 @@ import { TestBed, async } from '@angular/core/testing';
 import {FormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 import {Todo} from './todo';
+import {TodoDataService} from './todo-data.service';
 
 describe('AppComponent', () => {
   beforeEach(async(() => {
@@ -12,6 +13,9 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent
       ],
+      providers:[
+        TodoDataService
+      ]
     }).compileComponents();
   }));
 
