@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {TodoDataService} from './todo-data.service';
 import {Todo} from './todo';
 import {FormsModule } from '@angular/forms';
@@ -7,9 +7,9 @@ import {FormsModule } from '@angular/forms';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: []
+  providers: [TodoDataService]
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   // Ask Angualr DI system to inject the dependency
   // associated with the dependency injection token `TodoDataService`
@@ -17,36 +17,44 @@ export class AppComponent {
   constructor(private todoDataService: TodoDataService) {
   }
 
-  // newTodo: Todo = new Todo();
+  todos: Todo[] = [];
 
-  // addTodo() {
-  //  this.todoDataService.addTodo(this.newTodo);
-  //  this.newTodo = new Todo();
-  // }
-
-  onAddTodo(todo: Todo){
-    this.todoDataService.addTodo(todo);
-
+  public ngOnInit() {
+    this.todoDataService
+      .getAllTodos()
+      .subscribe(
+        (todos) => {
+          this.todos = todos;
+        }
+      );
+  }
+  onAddTodo(todo) {
+    this.todoDataService
+      .addTodo(todo)
+      .subscribe(
+        (newTodo) => {
+          this.todos = this.todos.concat(newTodo);
+        }
+      );
   }
 
-  // toggleTodoComplete(todo) {
-  //   this.todoDataService.toggleTodoComplete(todo);
-  // }
-
-  // removeTodo(todo) {
-  //   this.todoDataService.deleteTodoById(todo.id);
-  // }
-  // rename from toggleTodoComplete
-  onToggleTodoComplete(todo: Todo) {
-    this.todoDataService.toggleTodoComplete(todo);
+  onToggleTodoComplete(todo) {
+    this.todoDataService
+      .toggleTodoComplete(todo)
+      .subscribe(
+        (updatedTodo) => {
+          todo = updatedTodo;
+        }
+      );
   }
 
-  // rename from removeTodo
-  onRemoveTodo(todo: Todo) {
-    this.todoDataService.deleteTodoById(todo.id);
-  }
-
-  get todos() {
-    return this.todoDataService.getAllTodos();
+  onRemoveTodo(todo) {
+    this.todoDataService
+      .deleteTodoById(todo.id)
+      .subscribe(
+        (_) => {
+          this.todos = this.todos.filter((t) => t.id !== todo.id);
+        }
+      );
   }
 }
